@@ -12,9 +12,10 @@ defmodule BullsAndCows.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: BullsAndCows.PubSub},
       # Start the Endpoint (http/https)
-      BullsAndCowsWeb.Endpoint
+      BullsAndCowsWeb.Endpoint,
       # Start a worker by calling: BullsAndCows.Worker.start_link(arg)
       # {BullsAndCows.Worker, arg}
+      BullsAndCows.BackupAgent,
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
