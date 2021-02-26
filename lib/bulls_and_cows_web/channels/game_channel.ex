@@ -26,7 +26,6 @@ defmodule BullsAndCowsWeb.GameChannel do
     name = socket.assigns[:name]
     view = GameServer.change_text(name, text)
     |> Game.view(user)
-    broadcast(socket, "view", view)
     {:reply, {:ok, view}, socket}
   end
 
@@ -57,6 +56,16 @@ defmodule BullsAndCowsWeb.GameChannel do
     |> Game.view(user)
     broadcast(socket, "view", view)
     {:reply, {:ok, view}, socket}
+  end
+
+  intercept ["view"]
+
+  @impl true
+  def handle_out("view", msg, socket) do
+    user = socket.assigns[:user]
+    msg = %{msg | user: user}
+    push(socket, "view", msg)
+    {:noreply, socket}
   end
 
   # Add authorization logic here as required.

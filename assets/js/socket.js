@@ -67,4 +67,6 @@ channel.join()
   .receive("ok", state_update)
   .receive("error", resp => { console.log("Unable to join", resp) });
 
+channel.on("view", state_update);
+
 export default socket
