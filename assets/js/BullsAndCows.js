@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ch_join, ch_push, ch_reset, ch_guess, ch_login } from './socket';
 
 function Play({state}) {
-  let {user, guesses, results, text, message} = state;
+  let {user, users, guesses, results, text, message} = state;
   let view = text;
 
   function changeText(ev) {
@@ -31,6 +31,7 @@ function Play({state}) {
     <div className="App">
       <h1>Bulls and Cows game!</h1>
       <h2>User: {user}</h2>
+      <h2>Users playing the game: {users}</h2>
       <input type="text" value={text} onChange={changeText}
       onKeyPress={enter}/>
       <p>
@@ -107,6 +108,7 @@ function reset() {
 function BullsAndCows() {
   const [state, setState] = useState({
     user: "",
+    users: [],
     guesses: [],
     results: [],
     text: "",
@@ -137,6 +139,8 @@ function BullsAndCows() {
     body =
       <div>
         <h1>Bulls and Cows game!</h1>
+        <h2>User: {user}</h2>
+        <h2>Users playing the game: {users}</h2>
         <input type="text" value=""/>
         <p>
           <button>Guess</button>
