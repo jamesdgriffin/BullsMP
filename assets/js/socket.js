@@ -38,6 +38,12 @@ export function ch_join(cb) {
   callback(state);
 }
 
+export function ch_login(name) {
+  channel.push("login", {name: name})
+    .receive("ok", state_update)
+    .receive("error", resp => { console.log("Unable to login", resp) });
+}
+
 export function ch_push(text) {
   channel.push("changeText", text)
     .receive("ok", state_update)

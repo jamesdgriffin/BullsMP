@@ -11,13 +11,14 @@ defmodule BullsAndCows.Game do
     }
   end
 
-  def view(st) do
+  def view(st, user) do
     # view for end user to see
     %{
       guesses: st.guesses,
       results: st.results,
       text: st.text,
       message: st.message,
+      name: user,
     }
   end
 

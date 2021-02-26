@@ -3,17 +3,15 @@ defmodule BullsAndCowsWeb.GameChannel do
 
   alias BullsAndCows.Game
   alias BullsAndCows.BackupAgent
+  alias BullsAndCows.GameServer
 
   @impl true
   def join("game:" <> name, payload, socket) do
     if authorized?(payload) do
-      game = BackupAgent.get(name) || Game.new
-      # socket = assign(socket, :game, game)
-      socket = socket
-      |> assign(:name, name)
-      |> assign(:game, game)
-      BackupAgent.put(name,game)
-      view = Game.view(game)
+      GameServer.start(name)
+      view = GameServer.peek(name)
+      |> Game.view("")
+      socket = assign(socket, :name, name)
       {:ok, view, socket}
     else
       {:error, %{reason: "unauthorized"}}
@@ -23,32 +21,42 @@ defmodule BullsAndCowsWeb.GameChannel do
   # Channels can be used in a request/response fashion
   # by sending replies to requests from the client
   @impl true
-  def handle_in("changeText", %{"text" => text}, socket0) do
-    game0 = socket0.assigns[:game]
-    game1 = Game.change_text(game0, text)
-    socket1 = assign(socket0, :game, game1)
-    BackupAgent.put(socket0.assigns[:name], game1)
-    view = Game.view(game1)
-    {:reply, {:ok, view}, socket1}
+  def handle_in("changeText", %{"text" => text}, socket) do
+    user = socket.assigns[:user]
+    name = socket.assigns[:name]
+    view = GameServer.change_text(name, text)
+    |> Game.view(user)
+    broadcast(socket, "view", view)
+    {:reply, {:ok, view}, socket}
   end
 
   @impl true
-  def handle_in("guess", %{"guesses" => word}, socket2) do
-    game2 = socket2.assigns[:game]
-    game3 = Game.guess(game2, word)
-    socket3 = assign(socket2, :game, game3)
-    BackupAgent.put(socket2.assigns[:name], game3)
-    view = Game.view(game3)
-    {:reply, {:ok, view}, socket3}
+  def handle_in("guess", %{"guesses" => word}, socket) do
+    user = socket.assigns[:user]
+    name = socket.assigns[:name]
+    view = GameServer.guess(name, word)
+    |> Game.view(user)
+    broadcast(socket, "view", view)
+    {:reply, {:ok, view}, socket}
+  end
+
+  @impl true
+  def handle_in("login", %{"name" => user}, socket) do
+    socket = assign(socket, :user, user)
+    name = socket.assigns[:name]
+    view = GameServer.peek(name)
+    |>Game.view(user)
+    {:reply, {:ok, view}, socket}
   end
 
   @impl true
   def handle_in("reset", _, socket) do
-    game = Game.new
-    socket1 = assign(socket, :game, game)
-    BackupAgent.put(socket.assigns[:name], game)
-    view = Game.view(game)
-    {:reply, {:ok, view}, socket1}
+    user = socket.assigns[:user]
+    name = socket.assigns[:name]
+    view = GameServer.reset(name)
+    |> Game.view(user)
+    broadcast(socket, "view", view)
+    {:reply, {:ok, view}, socket}
   end
 
   # Add authorization logic here as required.

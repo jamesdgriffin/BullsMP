@@ -1,21 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { getRandom, getResult, valid } from './game.js';
-import { ch_join, ch_push, ch_reset, ch_guess } from './socket';
+import { ch_join, ch_push, ch_reset, ch_guess, ch_login } from './socket';
 
-function BullsAndCows() {
-  const [state, setState] = useState({
-    guesses: [],
-    results: [],
-    text: "",
-    message: "",
-  });
-
-  let {guesses, results, text, message} = state;
+function Play({state}) {
+  let {name, guesses, results, text, message} = state;
   let view = text;
-
-  useEffect(() => {
-    ch_join(setState);
-  });
 
   function changeText(ev) {
     //setText(ev.target.value);
@@ -33,80 +21,10 @@ function BullsAndCows() {
     ch_guess(st1);
   }
 
-  function win() {
-    let st1 = Object.assign({}, state, {message: "You Win!"});
-    setState(st1);
-  }
-
-  function lose() {
-    let st1 = Object.assign({}, state, {message: "You Lose! Press Reset button to try again."});
-    setState(st1);
-  }
-
-  function reset() {
-    console.log("reset");
-    ch_reset();
-  }
-
   function enter(ev) {
     if (ev.key == "Enter") {
       guess();
     }
-  }
-
-  if((message=="You Win!") ||
-  (message=="You Lose! Press Reset button to try again.")) {
-    return (
-      <div className="App">
-        <h1>Bulls and Cows game!</h1>
-        <h2>{message}</h2>
-        <input type="text" value=""/>
-        <p>
-          <button>Guess</button>
-          <button onClick={reset}>Reset</button>
-        </p>
-        <p>
-          <table>
-          <tr>
-            <th>Guesses</th>
-            <th>Results</th>
-          </tr>
-          <tr>
-            <td>{guesses[0]}</td>
-            <td>{results[0]}</td>
-          </tr>
-          <tr>
-            <td>{guesses[1]}</td>
-            <td>{results[1]}</td>
-          </tr>
-          <tr>
-            <td>{guesses[2]}</td>
-            <td>{results[2]}</td>
-          </tr>
-          <tr>
-            <td>{guesses[3]}</td>
-            <td>{results[3]}</td>
-          </tr>
-          <tr>
-            <td>{guesses[4]}</td>
-            <td>{results[4]}</td>
-          </tr>
-          <tr>
-            <td>{guesses[5]}</td>
-            <td>{results[5]}</td>
-          </tr>
-          <tr>
-            <td>{guesses[6]}</td>
-            <td>{results[6]}</td>
-          </tr>
-          <tr>
-            <td>{guesses[7]}</td>
-            <td>{results[7]}</td>
-          </tr>
-        </table>
-      </p>
-      </div>
-    );
   }
 
   return (
@@ -161,6 +79,121 @@ function BullsAndCows() {
       </p>
     </div>
   );
+}
+
+function Login() {
+  const [name, setName] = useState("");
+
+  return (
+    <div className="row">
+      <div className="column">
+        <input type="text"
+               value={name}
+               onChange={(ev) => setName(ev.target.value)} />
+      </div>
+      <div className="column">
+        <button onClick={() => ch_login(name)}>Login!</button>
+      </div>
+    </div>
+  );
+}
+
+function reset() {
+  console.log("reset");
+  ch_reset();
+}
+
+function BullsAndCows() {
+  const [state, setState] = useState({
+    name: "",
+    guesses: [],
+    results: [],
+    text: "",
+    message: "",
+  });
+
+  useEffect(() => {
+    ch_join(setState);
+  });
+
+  let body = null;
+
+  function win() {
+    let st1 = Object.assign({}, state, {message: "You Win!"});
+    setState(st1);
+  }
+
+  function lose() {
+    let st1 = Object.assign({}, state, {message: "You Lose! Press Reset button to try again."});
+    setState(st1);
+  }
+
+  if(state.name == "") {
+    body = <Login />
+  }
+  else if((state.message=="You Win!") ||
+  (state.message=="You Lose! Press Reset button to try again.")) {
+    body =
+      <div>
+        <h1>Bulls and Cows game!</h1>
+        <h2>{message}</h2>
+        <input type="text" value=""/>
+        <p>
+          <button>Guess</button>
+          <button onClick={reset}>Reset</button>
+        </p>
+        <p>
+          <table>
+          <tr>
+            <th>Guesses</th>
+            <th>Results</th>
+          </tr>
+          <tr>
+            <td>{guesses[0]}</td>
+            <td>{results[0]}</td>
+          </tr>
+          <tr>
+            <td>{guesses[1]}</td>
+            <td>{results[1]}</td>
+          </tr>
+          <tr>
+            <td>{guesses[2]}</td>
+            <td>{results[2]}</td>
+          </tr>
+          <tr>
+            <td>{guesses[3]}</td>
+            <td>{results[3]}</td>
+          </tr>
+          <tr>
+            <td>{guesses[4]}</td>
+            <td>{results[4]}</td>
+          </tr>
+          <tr>
+            <td>{guesses[5]}</td>
+            <td>{results[5]}</td>
+          </tr>
+          <tr>
+            <td>{guesses[6]}</td>
+            <td>{results[6]}</td>
+          </tr>
+          <tr>
+            <td>{guesses[7]}</td>
+            <td>{results[7]}</td>
+          </tr>
+        </table>
+      </p>
+    </div>;
+  }
+  else {
+    body = <Play state={state} />
+  }
+
+  return (
+    <div className="App">
+    {body}
+    </div>
+  );
+
 }
 
 export default BullsAndCows;
