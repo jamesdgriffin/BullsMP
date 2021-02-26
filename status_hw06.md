@@ -9,7 +9,9 @@ hw06.jimbot.io
 
 3. Which parts of this assignment did you have trouble with, if any?
 deploying took a while, could not figure out my 502 nginx error.
-Nat's video helped out.
+Nat's video helped out. Also, for some reason my code was 32MB and would
+not submit to Inkfish. I had to remove node modules, dependencies, and the
+_build folder to regain space. These can all be re-generated.
 
 Unfortunately did not have time to complete the entire assignment.
 As it is deployed right now: multiple users can log in to a single game, and
