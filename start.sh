@@ -1,15 +1,18 @@
+#!/bin/bash
 
-export SECRET_KEY_BASE=W68eso5YQOlbtvSNUR50N/HDWj6IaEhAwMR3LtzuBEQAefwYVbX84bvoTA7XtiGi
+# Could factor some of this out into an env.sh
+# to share with deploy.sh
 export MIX_ENV=prod
 export PORT=4710
 
-echo "Stopping old copy of app, if any..."
+CFGD=$(readlink -f ~/.config/hw06)
 
-_build/prod/rel/bulls_and_cows/bin/bulls_and_cows stop || true
+if [ ! -e "$CFGD/base" ]; then
+    echo "Need to deploy first"
+    exit 1
+fi
 
-echo "Starting app..."
+SECRET_KEY_BASE=$(cat "$CFGD/base")
+export SECRET_KEY_BASE
 
 _build/prod/rel/bulls_and_cows/bin/bulls_and_cows start
-
-# TODO: DONE. Add a systemd service file
-#       to start your app on system boot.

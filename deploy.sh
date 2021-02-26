@@ -1,25 +1,28 @@
 #!/bin/bash
+# This is deploy.sh
 
-export SECRET_KEY_BASE=W68eso5YQOlbtvSNUR50N/HDWj6IaEhAwMR3LtzuBEQAefwYVbX84bvoTA7XtiGi
 export MIX_ENV=prod
 export PORT=4710
-export NODEBIN=`pwd`/assets/node_modules/.bin
-export PATH="$PATH:$NODEBIN"
+export SECRET_KEY_BASE=insecure
 
-echo "Building..."
-
-mix deps.get
+mix deps.get --only prod
 mix compile
-(cd assets && npm install)
-(cd assets && webpack --mode production)
+
+CFGD=$(readlink -f ~/.config/hw06)
+
+if [ ! -d "$CFGD" ]; then
+mkdir -p $CFGD
+fi
+
+if [ ! -e "$CFGD/base" ]; then
+mix phx.gen.secret > "$CFGD/base"
+fi
+
+SECRET_KEY_BASE=$(cat "$CFGD/base")
+export SECRET_KEY_BASE
+
+npm install --prefix ./assets
+npm run deploy --prefix ./assets
 mix phx.digest
 
-echo "Generating release..."
 mix release
-
-echo "Stopping old copy of app, if any..."
-_build/prod/rel/bulls_and_cows/bin/bulls_and_cows stop || true
-
-echo "Starting app..."
-
-PROD=t ./start.sh
