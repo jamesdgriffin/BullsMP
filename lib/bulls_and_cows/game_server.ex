@@ -41,6 +41,10 @@ defmodule BullsAndCows.GameServer do
     GenServer.call(reg(name), {:peek, name})
   end
 
+  def reset(name) do
+    GenServer.call(reg(name), {:reset, name})
+  end
+
   #implementation start
 
   def init(game) do
@@ -60,6 +64,12 @@ defmodule BullsAndCows.GameServer do
   end
 
   def handle_call({:peek, _name}, _from, game) do
+    {:reply, game, game}
+  end
+
+  def handle_call({:reset, name}, _from, game) do
+    game = Game.new
+    BackupAgent.put(name, game)
     {:reply, game, game}
   end
 

@@ -18,7 +18,7 @@ defmodule BullsAndCows.Game do
       results: st.results,
       text: st.text,
       message: st.message,
-      name: user,
+      user: user,
     }
   end
 

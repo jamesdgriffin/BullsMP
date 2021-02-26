@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ch_join, ch_push, ch_reset, ch_guess, ch_login } from './socket';
 
 function Play({state}) {
-  let {name, guesses, results, text, message} = state;
+  let {user, guesses, results, text, message} = state;
   let view = text;
 
   function changeText(ev) {
@@ -30,14 +30,15 @@ function Play({state}) {
   return (
     <div className="App">
       <h1>Bulls and Cows game!</h1>
-      <h2>{message}</h2>
+      <h2>User: {user}</h2>
       <input type="text" value={text} onChange={changeText}
       onKeyPress={enter}/>
       <p>
         <button onClick={guess}>Guess</button>
         <button onClick={reset}>Reset</button>
       </p>
-      <p>
+      <h2>{message}</h2>
+      <div>
         <table>
           <tr>
             <th>Guesses</th>
@@ -76,23 +77,23 @@ function Play({state}) {
             <td>{results[7]}</td>
           </tr>
         </table>
-      </p>
+      </div>
     </div>
   );
 }
 
 function Login() {
-  const [name, setName] = useState("");
+  const [user, setUser] = useState("");
 
   return (
     <div className="row">
       <div className="column">
         <input type="text"
-               value={name}
-               onChange={(ev) => setName(ev.target.value)} />
+               value={user}
+               onChange={(ev) => setUser(ev.target.value)} />
       </div>
       <div className="column">
-        <button onClick={() => ch_login(name)}>Login!</button>
+        <button onClick={() => ch_login(user)}>Login!</button>
       </div>
     </div>
   );
@@ -105,7 +106,7 @@ function reset() {
 
 function BullsAndCows() {
   const [state, setState] = useState({
-    name: "",
+    user: "",
     guesses: [],
     results: [],
     text: "",
@@ -128,7 +129,7 @@ function BullsAndCows() {
     setState(st1);
   }
 
-  if(state.name == "") {
+  if(state.user == "") {
     body = <Login />
   }
   else if((state.message=="You Win!") ||
@@ -136,13 +137,13 @@ function BullsAndCows() {
     body =
       <div>
         <h1>Bulls and Cows game!</h1>
-        <h2>{message}</h2>
         <input type="text" value=""/>
         <p>
           <button>Guess</button>
           <button onClick={reset}>Reset</button>
         </p>
-        <p>
+        <h2>{message}</h2>
+        <div>
           <table>
           <tr>
             <th>Guesses</th>
@@ -181,7 +182,7 @@ function BullsAndCows() {
             <td>{results[7]}</td>
           </tr>
         </table>
-      </p>
+      </div>
     </div>;
   }
   else {

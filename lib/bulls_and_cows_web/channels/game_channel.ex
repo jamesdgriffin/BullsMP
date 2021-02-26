@@ -41,7 +41,7 @@ defmodule BullsAndCowsWeb.GameChannel do
   end
 
   @impl true
-  def handle_in("login", %{"name" => user}, socket) do
+  def handle_in("login", %{"user" => user}, socket) do
     socket = assign(socket, :user, user)
     name = socket.assigns[:name]
     view = GameServer.peek(name)
